@@ -148,4 +148,9 @@ public partial class Player : CharacterBody2D
 		jumpKeyHoldTime = 0f;
 		isJumping = true;
 	}
+
+	public bool IsPlayer()
+	{
+		return true;
+	}
 }

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="leapruler"
-run/main_scene="res://main.tscn"
+run/main_scene="res://scenes/game/levels/level_one.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 run/max_fps=240
 config/icon="res://assets/icon.svg"
