@@ -1,23 +1,22 @@
-
+using System;
 using Godot;
 
 public partial class Player : CharacterBody2D
 {
 	private float WalkHorizontalSpeed { get; set; } = 125f;
 	private float JumpHorizontalSpeed { get; set; } = 250f;
-	private float Mass { get; set; } = 1f;
-	private float TimeToJumpPeak { get; set; } = 0.4f;
-	private float MaxJumpHeight { get; set; } = 132f;
-	private float MinJumpHeight { get; set; } = 32f;
+	private float MinJumpHorizontalSpeed { get; set; } = 85f;
+	private float MaxJumpHeight { get; set; } = 96f;
+	private float MinJumpHeight { get; set; } = 16f;
 	private float MaxDurationOfJump { get; set; } = 0.65f;
-
-
-	private float JumpSpeed;
+	private float TimeToJumpPeak { get; set; } = 0.4f;
 	private float Gravity;
-	private Vector2 velocity = new();
+	private float JumpSpeed;
+	private Vector2 velocity = new Vector2();
 	private string facingDirection = "right";
 	private float jumpKeyHoldTime = 0f;
 	private bool isJumping = false;
+	private bool ableToJump = true;
 
 	public override void _Ready()
 	{
@@ -27,8 +26,18 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		var movementDirection = GetInput();
+		Vector2 movementDirection = GetInput();
 		ApplyGravity((float)delta);
+
+		// Check if there is horizontal or vertical movement and set ableToJump accordingly
+		if (IsOnWallOnly() || IsOnCeiling() || Velocity.X != 0 || Velocity.Y != 0)
+		{
+			ableToJump = false;
+		}
+		else
+		{
+			ableToJump = true;
+		}
 
 		if (isJumping)
 		{
@@ -45,21 +54,23 @@ public partial class Player : CharacterBody2D
 
 		if (IsOnFloor())
 		{
-			isJumping = false; // Reset the jumping flag
+			isJumping = false;
+
 			ApplyMovement(movementDirection);
+
 			velocity.Y = 0;
-			if (Input.IsActionPressed("jump"))
+
+			if (Input.IsActionPressed("jump") && movementDirection.X == 0 && movementDirection.Y == 0)
 			{
-				jumpKeyHoldTime += (float)delta; // Update the duration while the jump key is held
+				jumpKeyHoldTime += (float)delta;
 			}
 		}
 		else
 		{
-			jumpKeyHoldTime = 0f; // Reset the jump key hold time if the player is not on the floor
+			jumpKeyHoldTime = 0f;
 		}
 
-		// Jump logic remains unchanged
-		if ((Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump) && IsOnFloor())
+		if ((Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump) && IsOnFloor() && ableToJump)
 		{
 			Jump();
 		}
@@ -67,7 +78,6 @@ public partial class Player : CharacterBody2D
 		Velocity = velocity;
 		MoveAndSlide();
 	}
-
 	private Vector2 GetInput()
 	{
 		Vector2 direction = new Vector2();
@@ -103,32 +113,35 @@ public partial class Player : CharacterBody2D
 
 	private float CalculateJumpHeight()
 	{
-		return jumpKeyHoldTime / MaxDurationOfJump * MaxJumpHeight;
+		// Ensure the ratio is between 0 and 1
+		float ratio = Mathf.Clamp(jumpKeyHoldTime / MaxDurationOfJump, 0f, 1f);
+		GD.Print($"jumpKeyHoldTime: {jumpKeyHoldTime}, MaxDurationOfJump: {MaxDurationOfJump}, ratio: {ratio}");
+		float scalingFactor = Mathf.Pow(ratio, 2);
+		return MinJumpHeight + (MaxJumpHeight - MinJumpHeight) * scalingFactor;
 	}
 
 	private float CalculateJumpSpeed()
 	{
-		return jumpKeyHoldTime / MaxDurationOfJump * JumpHorizontalSpeed;
+		// Ensure the ratio is between 0 and 1
+		float ratio = Mathf.Clamp(jumpKeyHoldTime / MaxDurationOfJump, 0f, 1f);
+		GD.Print($"jumpKeyHoldTime: {jumpKeyHoldTime}, MaxDurationOfJump: {MaxDurationOfJump} ratio: {ratio}");
+		float scalingFactor = Mathf.Pow(ratio, 2);
+		return MinJumpHorizontalSpeed + (JumpHorizontalSpeed - MinJumpHorizontalSpeed) * scalingFactor;
 	}
 
 	private void Jump()
 	{
+		// Use the adjusted methods for calculating dynamic jump height and speed
 		float dynamicJumpHeight = CalculateJumpHeight();
-		if (dynamicJumpHeight < MinJumpHeight)
-		{
-			dynamicJumpHeight = MinJumpHeight;
-		}
-		float dynamicJumpSpeed = Mathf.Sqrt(2 * dynamicJumpHeight * Gravity); // Calculate the necessary jump speed for the desired height
+		float dynamicJumpSpeed = Mathf.Sqrt(2 * dynamicJumpHeight * Gravity);
+		float horizontalJumpForce = CalculateJumpSpeed() * (facingDirection == "right" ? 1 : -1);
 
-		// Determine the horizontal jump force based on the facing direction
-		float horizontalJumpForce = facingDirection == "right" ? CalculateJumpSpeed() : -CalculateJumpSpeed();
+		velocity.Y = -dynamicJumpSpeed;
+		velocity.X = horizontalJumpForce;
 
-		// Apply the dynamic jump speed and horizontal force
-		velocity.Y = -dynamicJumpSpeed; // Apply the dynamic jump speed vertically
-		velocity.X = horizontalJumpForce; // Apply horizontal force based on facing direction
+		GD.Print($"Jumped with: {dynamicJumpHeight} height and {dynamicJumpSpeed} speed in {jumpKeyHoldTime} seconds");
 
-		jumpKeyHoldTime = 0f; // Reset the jump key hold time
-		isJumping = true; // Set the jumping flag to true
+		jumpKeyHoldTime = 0f;
+		isJumping = true;
 	}
 }
-
