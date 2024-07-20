@@ -80,7 +80,6 @@ public partial class Player : CharacterBody2D
 		{
 			Jump();
 		}
-		GD.Print(sprite.Rotation);
 
 		Velocity = velocity;
 		MoveAndSlide();
