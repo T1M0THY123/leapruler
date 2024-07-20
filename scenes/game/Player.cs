@@ -10,6 +10,7 @@ public partial class Player : CharacterBody2D
 	private float MinJumpHeight { get; set; } = 16f;
 	private float MaxDurationOfJump { get; set; } = 0.65f;
 	private float TimeToJumpPeak { get; set; } = 0.4f;
+	private float DegreesOfRotation { get; set; } = 90f;
 	private float Gravity;
 	private float JumpSpeed;
 	private Vector2 velocity = new Vector2();
@@ -17,11 +18,13 @@ public partial class Player : CharacterBody2D
 	private float jumpKeyHoldTime = 0f;
 	private bool isJumping = false;
 	private bool ableToJump = true;
+	private Sprite2D sprite;
 
 	public override void _Ready()
 	{
 		Gravity = 2 * MaxJumpHeight / Mathf.Pow(TimeToJumpPeak, 2);
 		JumpSpeed = Gravity * TimeToJumpPeak;
+		sprite = GetNode<Sprite2D>("Sprite2D");
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -49,11 +52,14 @@ public partial class Player : CharacterBody2D
 			if (IsOnWall())
 			{
 				velocity.X = -velocity.X;
+				facingDirection = facingDirection == "right" ? "left" : "right";
+				sprite.Rotation = facingDirection == "right" ? DegreesOfRotation : -DegreesOfRotation;
 			}
 		}
 
 		if (IsOnFloor())
 		{
+			sprite.Rotation = 0;
 			isJumping = false;
 
 			ApplyMovement(movementDirection);
@@ -74,6 +80,7 @@ public partial class Player : CharacterBody2D
 		{
 			Jump();
 		}
+		GD.Print(sprite.Rotation);
 
 		Velocity = velocity;
 		MoveAndSlide();
@@ -115,7 +122,6 @@ public partial class Player : CharacterBody2D
 	{
 		// Ensure the ratio is between 0 and 1
 		float ratio = Mathf.Clamp(jumpKeyHoldTime / MaxDurationOfJump, 0f, 1f);
-		GD.Print($"jumpKeyHoldTime: {jumpKeyHoldTime}, MaxDurationOfJump: {MaxDurationOfJump}, ratio: {ratio}");
 		float scalingFactor = Mathf.Pow(ratio, 2);
 		return MinJumpHeight + (MaxJumpHeight - MinJumpHeight) * scalingFactor;
 	}
@@ -124,7 +130,6 @@ public partial class Player : CharacterBody2D
 	{
 		// Ensure the ratio is between 0 and 1
 		float ratio = Mathf.Clamp(jumpKeyHoldTime / MaxDurationOfJump, 0f, 1f);
-		GD.Print($"jumpKeyHoldTime: {jumpKeyHoldTime}, MaxDurationOfJump: {MaxDurationOfJump} ratio: {ratio}");
 		float scalingFactor = Mathf.Pow(ratio, 2);
 		return MinJumpHorizontalSpeed + (JumpHorizontalSpeed - MinJumpHorizontalSpeed) * scalingFactor;
 	}
@@ -139,7 +144,7 @@ public partial class Player : CharacterBody2D
 		velocity.Y = -dynamicJumpSpeed;
 		velocity.X = horizontalJumpForce;
 
-		GD.Print($"Jumped with: {dynamicJumpHeight} height and {dynamicJumpSpeed} speed in {jumpKeyHoldTime} seconds");
+		sprite.Rotation = facingDirection == "right" ? DegreesOfRotation : -DegreesOfRotation;
 
 		jumpKeyHoldTime = 0f;
 		isJumping = true;
