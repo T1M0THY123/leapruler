@@ -3,29 +3,66 @@ using Godot;
 
 public partial class Player : CharacterBody2D
 {
-	[Export]
-	public int MaxSpeed { get; set; } = 50;
+	private float WalkHorizontalSpeed { get; set; } = 125f;
+	private float JumpHorizontalSpeed { get; set; } = 250f;
+	private float Mass { get; set; } = 1f;
+	private float TimeToJumpPeak { get; set; } = 0.4f;
+	private float MaxJumpHeight { get; set; } = 132f;
+	private float MinJumpHeight { get; set; } = 32f;
+	private float MaxDurationOfJump { get; set; } = 0.65f;
 
-	public float Gravity { get; set; } = 9.81f;
 
-	[Export]
-	public float Mass { get; set; } = 1.0f;
-
-	[Export]
-	public float Acceleration { get; set; } = 10.0f;
-
-	[Export]
-	public float Friction { get; set; } = 8.0f;
-
-	private Vector2 velocity = new Vector2();
+	private float JumpSpeed;
+	private float Gravity;
+	private Vector2 velocity = new();
 	private string facingDirection = "right";
+	private float jumpKeyHoldTime = 0f;
+	private bool isJumping = false;
+
+	public override void _Ready()
+	{
+		Gravity = 2 * MaxJumpHeight / Mathf.Pow(TimeToJumpPeak, 2);
+		JumpSpeed = Gravity * TimeToJumpPeak;
+	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		var movementDirection = GetInput();
 		ApplyGravity((float)delta);
-		ApplyMovement(movementDirection, (float)delta);
-		ApplyFriction(movementDirection, (float)delta);
+
+		if (isJumping)
+		{
+			if (IsOnCeiling())
+			{
+				velocity.Y = -velocity.Y;
+			}
+
+			if (IsOnWall())
+			{
+				velocity.X = -velocity.X;
+			}
+		}
+
+		if (IsOnFloor())
+		{
+			isJumping = false; // Reset the jumping flag
+			ApplyMovement(movementDirection);
+			velocity.Y = 0;
+			if (Input.IsActionPressed("jump"))
+			{
+				jumpKeyHoldTime += (float)delta; // Update the duration while the jump key is held
+			}
+		}
+		else
+		{
+			jumpKeyHoldTime = 0f; // Reset the jump key hold time if the player is not on the floor
+		}
+
+		// Jump logic remains unchanged
+		if ((Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump) && IsOnFloor())
+		{
+			Jump();
+		}
 
 		Velocity = velocity;
 		MoveAndSlide();
@@ -52,21 +89,46 @@ public partial class Player : CharacterBody2D
 		velocity.Y += Gravity * delta;
 	}
 
-	private void ApplyMovement(Vector2 direction, float delta)
+	private void ApplyMovement(Vector2 direction)
 	{
 		if (direction.X != 0)
 		{
-			velocity.X += direction.X * Acceleration * Mass * delta;
-			velocity.X = Mathf.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
+			velocity.X = direction.X * WalkHorizontalSpeed;
+		}
+		else
+		{
+			velocity.X = 0;
 		}
 	}
 
-	private void ApplyFriction(Vector2 direction, float delta)
+	private float CalculateJumpHeight()
 	{
-		if (direction.X == 0)
+		return jumpKeyHoldTime / MaxDurationOfJump * MaxJumpHeight;
+	}
+
+	private float CalculateJumpSpeed()
+	{
+		return jumpKeyHoldTime / MaxDurationOfJump * JumpHorizontalSpeed;
+	}
+
+	private void Jump()
+	{
+		float dynamicJumpHeight = CalculateJumpHeight();
+		if (dynamicJumpHeight < MinJumpHeight)
 		{
-			velocity.X = Mathf.MoveToward(velocity.X, 0, Friction * delta);
+			dynamicJumpHeight = MinJumpHeight;
 		}
+		float dynamicJumpSpeed = Mathf.Sqrt(2 * dynamicJumpHeight * Gravity); // Calculate the necessary jump speed for the desired height
+
+		// Determine the horizontal jump force based on the facing direction
+		float horizontalJumpForce = facingDirection == "right" ? CalculateJumpSpeed() : -CalculateJumpSpeed();
+
+		// Apply the dynamic jump speed and horizontal force
+		velocity.Y = -dynamicJumpSpeed; // Apply the dynamic jump speed vertically
+		velocity.X = horizontalJumpForce; // Apply horizontal force based on facing direction
+
+		jumpKeyHoldTime = 0f; // Reset the jump key hold time
+		isJumping = true; // Set the jumping flag to true
 	}
 }
 
