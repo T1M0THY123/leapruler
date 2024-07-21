@@ -3,14 +3,23 @@ using Godot;
 
 public partial class Player : CharacterBody2D
 {
+	[Export]
 	private float WalkHorizontalSpeed { get; set; } = 125f;
+	[Export]
 	private float JumpHorizontalSpeed { get; set; } = 250f;
+	[Export]
 	private float MinJumpHorizontalSpeed { get; set; } = 85f;
+	[Export]
 	private float MaxJumpHeight { get; set; } = 96f;
+	[Export]
 	private float MinJumpHeight { get; set; } = 16f;
+	[Export]
 	private float MaxDurationOfJump { get; set; } = 0.65f;
+	[Export]
 	private float TimeToJumpPeak { get; set; } = 0.4f;
+	[Export]
 	private float DegreesOfRotation { get; set; } = 90f;
+
 	private float Gravity;
 	private float JumpSpeed;
 	private Vector2 velocity = new Vector2();

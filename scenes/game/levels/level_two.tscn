@@ -117,13 +117,13 @@ layer_0/tile_data = PackedInt32Array(65544, 196608, 1, -1245193, 327680, 1, -111
 zoom = Vector2(3, 3)
 
 [node name="Player" parent="." instance=ExtResource("3_acwyw")]
-position = Vector2(-114, -61)
+position = Vector2(-94, 115)
 scale = Vector2(0.9, 0.9)
 
 [node name="NextLevel" type="Area2D" parent="."]
 position = Vector2(0, -210)
 script = ExtResource("4_fw18j")
-NextScenePath = "res://scenes/game/levels/level_one.tscn"
+NextScenePath = "res://scenes/game/levels/level_three.tscn"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NextLevel"]
 position = Vector2(0, 20.75)
