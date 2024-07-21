@@ -97,7 +97,7 @@ physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_ktisg")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n73qo"]
-size = Vector2(94.1176, 128.767)
+size = Vector2(94.1176, 15.0685)
 
 [node name="Node2D" type="Node2D"]
 
@@ -117,6 +117,7 @@ zoom = Vector2(3, 3)
 
 [node name="Player" parent="." instance=ExtResource("2_4tdt6")]
 position = Vector2(0, 145)
+scale = Vector2(0.9, 0.9)
 
 [node name="NextLevel" type="Area2D" parent="."]
 position = Vector2(0, -210)
@@ -124,6 +125,7 @@ script = ExtResource("3_0snmb")
 NextScenePath = "res://scenes/game/levels/level_two.tscn"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NextLevel"]
+position = Vector2(0, 20.75)
 scale = Vector2(3.06, 0.365)
 shape = SubResource("RectangleShape2D_n73qo")
 

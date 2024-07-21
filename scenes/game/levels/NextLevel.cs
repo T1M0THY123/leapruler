@@ -20,6 +20,3 @@ public partial class NextLevel : Area2D
 		GetTree().ChangeSceneToFile(NextScenePath);
 	}
 }
-
-
-
