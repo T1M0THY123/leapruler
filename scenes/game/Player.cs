@@ -8,9 +8,11 @@ public partial class Player : CharacterBody2D
 	[Export]
 	private float JumpHorizontalSpeed { get; set; } = 250f;
 	[Export]
-	private float MinJumpHorizontalSpeed { get; set; } = 85f;
+	private float MinJumpHorizontalSpeed { get; set; } = 42.5f;
 	[Export]
-	private float MaxJumpHeight { get; set; } = 96f;
+	private float MaxJumpHorizontalSpeed { get; set; } = 155f; // Adjust the value as needed
+	[Export]
+	private float MaxJumpHeight { get; set; } = 69f; //nice
 	[Export]
 	private float MinJumpHeight { get; set; } = 16f;
 	[Export]
@@ -138,22 +140,29 @@ public partial class Player : CharacterBody2D
 	{
 		// Ensure the ratio is between 0 and 1
 		float ratio = Mathf.Clamp(jumpKeyHoldTime / MaxDurationOfJump, 0f, 1f);
-		float scalingFactor = Mathf.Pow(ratio, 2);
-		return MinJumpHorizontalSpeed + (JumpHorizontalSpeed - MinJumpHorizontalSpeed) * scalingFactor;
+		// Calculate speed based on ratio
+		float speed = Mathf.Lerp(MinJumpHorizontalSpeed, JumpHorizontalSpeed, ratio);
+		// Ensure speed does not exceed MaxJumpHorizontalSpeed
+		return Mathf.Min(speed, MaxJumpHorizontalSpeed);
 	}
 
 	private void Jump()
 	{
-		// Use the adjusted methods for calculating dynamic jump height and speed
+		// Calculate dynamic jump height and speed
 		float dynamicJumpHeight = CalculateJumpHeight();
 		float dynamicJumpSpeed = Mathf.Sqrt(2 * dynamicJumpHeight * Gravity);
+
+		// Calculate horizontal jump force. Ensure it respects MinJumpHorizontalSpeed and JumpHorizontalSpeed.
 		float horizontalJumpForce = CalculateJumpSpeed() * (facingDirection == "right" ? 1 : -1);
 
+		// Apply vertical and horizontal forces
 		velocity.Y = -dynamicJumpSpeed;
 		velocity.X = horizontalJumpForce;
 
+		// Apply rotation based on the facing direction
 		sprite.Rotation = facingDirection == "right" ? DegreesOfRotation : -DegreesOfRotation;
 
+		// Reset jump key hold time and set isJumping to true
 		jumpKeyHoldTime = 0f;
 		isJumping = true;
 	}
