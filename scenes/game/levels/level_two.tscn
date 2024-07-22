@@ -117,7 +117,7 @@ layer_0/tile_data = PackedInt32Array(65544, 196608, 1, -1245193, 327680, 1, -111
 zoom = Vector2(3, 3)
 
 [node name="Player" parent="." instance=ExtResource("3_acwyw")]
-position = Vector2(-83, -24)
+position = Vector2(-307, 115)
 scale = Vector2(0.9, 0.9)
 
 [node name="NextLevel" type="Area2D" parent="."]

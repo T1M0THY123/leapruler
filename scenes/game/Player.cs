@@ -4,13 +4,13 @@ using Godot;
 public partial class Player : CharacterBody2D
 {
 	[Export]
-	private float WalkHorizontalSpeed { get; set; } = 125f;
+	private float WalkHorizontalSpeed { get; set; } = 75f;
 	[Export]
 	private float JumpHorizontalSpeed { get; set; } = 250f;
 	[Export]
-	private float MinJumpHorizontalSpeed { get; set; } = 22f;
+	private float MinJumpHorizontalSpeed { get; set; } = 66f;
 	[Export]
-	private float MaxJumpHorizontalSpeed { get; set; } = 186f; // Adjust the value as needed
+	private float MaxJumpHorizontalSpeed { get; set; } = 218f; // Adjust the value as needed
 	[Export]
 	private float MaxJumpHeight { get; set; } = 77f; //nice
 	[Export]
@@ -23,7 +23,6 @@ public partial class Player : CharacterBody2D
 	private float gravityFactor { get; set; } = 1f;
 	[Export]
 	private float MinimumBounceVelocity { get; set; } = 30f;
-
 	private float Gravity;
 	private float JumpSpeed;
 	private Vector2 velocity = new Vector2();
@@ -42,23 +41,30 @@ public partial class Player : CharacterBody2D
 	{
 		isJumping = false;
 		Vector2 movementDirection = GetInput();
+
 		ApplyGravity((float)delta);
 
 		if (IsOnFloor()) // If the player is on the floor
 		{
 			isJumping = false;
-
-			ApplyMovement(movementDirection);
-
+			velocity.X = 0;
 			velocity.Y = 0;
+			bool jumpInitiated = false;
 
 			if (Input.IsActionPressed("jump") && movementDirection.X == 0 && movementDirection.Y == 0)
 			{
 				jumpKeyHoldTime += (float)delta;
+				jumpInitiated = true;
 			}
 			if (Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump)
 			{
 				Jump();
+				jumpInitiated = true;
+			}
+
+			if (!jumpInitiated)
+			{
+				velocity.X = movementDirection.X * WalkHorizontalSpeed;
 			}
 		}
 		else
@@ -107,18 +113,6 @@ public partial class Player : CharacterBody2D
 	private void ApplyGravity(float delta)
 	{
 		velocity.Y += Gravity * delta * gravityFactor;
-	}
-
-	private void ApplyMovement(Vector2 direction)
-	{
-		if (direction.X != 0)
-		{
-			velocity.X = direction.X * WalkHorizontalSpeed;
-		}
-		else
-		{
-			velocity.X = 0;
-		}
 	}
 
 	private float CalculateJumpHeight()

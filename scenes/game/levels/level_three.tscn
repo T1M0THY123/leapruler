@@ -123,6 +123,7 @@ zoom = Vector2(3, 3)
 [node name="Player" parent="." instance=ExtResource("3_jtx45")]
 position = Vector2(-263, 83)
 scale = Vector2(0.9, 0.9)
+TimeToJumpPeak = 0.56
 
 [node name="NextLevel" type="Area2D" parent="."]
 position = Vector2(0, -210)
@@ -139,7 +140,7 @@ shape = SubResource("RectangleShape2D_n73qo")
 [node name="PreviousLevel" type="Area2D" parent="."]
 position = Vector2(0, 143)
 script = ExtResource("4_o1w0k")
-NextScenePath = "res://scenes/game/levels/level_one.tscn"
+NextScenePath = "res://scenes/game/levels/level_two.tscn"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PreviousLevel"]
 position = Vector2(0, 20.75)
