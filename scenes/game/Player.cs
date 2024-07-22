@@ -20,9 +20,9 @@ public partial class Player : CharacterBody2D
 	[Export]
 	private float TimeToJumpPeak { get; set; } = 0.28f;
 	[Export]
-	private float DegreesOfRotation { get; set; } = 90f;
-	[Export]
 	private float gravityFactor { get; set; } = 1f;
+	[Export]
+	private float MinimumBounceVelocity { get; set; } = 30f;
 
 	private float Gravity;
 	private float JumpSpeed;
@@ -30,50 +30,22 @@ public partial class Player : CharacterBody2D
 	private string facingDirection = "right";
 	private float jumpKeyHoldTime = 0f;
 	private bool isJumping = false;
-	private bool ableToJump = true;
-	private Sprite2D sprite;
+	public bool IsPlayer() => true;
 
 	public override void _Ready()
 	{
 		Gravity = 2 * MaxJumpHeight / Mathf.Pow(TimeToJumpPeak, 2);
 		JumpSpeed = Gravity * TimeToJumpPeak;
-		sprite = GetNode<Sprite2D>("Sprite2D");
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		isJumping = false;
 		Vector2 movementDirection = GetInput();
 		ApplyGravity((float)delta);
 
-		// Check if there is horizontal or vertical movement and set ableToJump accordingly
-		if (IsOnWallOnly() || IsOnCeiling() || Velocity.X != 0 || Velocity.Y != 0)
+		if (IsOnFloor()) // If the player is on the floor
 		{
-			ableToJump = false;
-		}
-		else
-		{
-			ableToJump = true;
-		}
-
-		if (isJumping)
-		{
-
-			if (IsOnCeiling())
-			{
-				velocity.Y = -velocity.Y;
-			}
-
-			if (IsOnWall())
-			{
-				velocity.X = -velocity.X;
-				facingDirection = facingDirection == "right" ? "left" : "right";
-				sprite.Rotation = facingDirection == "right" ? DegreesOfRotation : -DegreesOfRotation;
-			}
-		}
-
-		if (IsOnFloor())
-		{
-			sprite.Rotation = 0;
 			isJumping = false;
 
 			ApplyMovement(movementDirection);
@@ -84,15 +56,33 @@ public partial class Player : CharacterBody2D
 			{
 				jumpKeyHoldTime += (float)delta;
 			}
+			if (Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump)
+			{
+				Jump();
+			}
 		}
 		else
 		{
-			jumpKeyHoldTime = 0f;
-		}
-
-		if ((Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump) && IsOnFloor() && ableToJump)
-		{
-			Jump();
+			if (IsOnCeiling())
+			{
+				// Check if the current Y velocity is too small to provide a noticeable bounce
+				GD.Print(velocity.Y + " " + MinimumBounceVelocity);
+				if (Math.Abs(velocity.Y) < MinimumBounceVelocity)
+				{
+					// Apply a minimum bounce velocity downwards
+					velocity.Y = MinimumBounceVelocity;
+				}
+				else
+				{
+					// Invert the Y velocity as usual
+					velocity.Y = -velocity.Y;
+				}
+			}
+			if (IsOnWall())
+			{
+				velocity.X = -velocity.X;
+				facingDirection = facingDirection == "right" ? "left" : "right";
+			}
 		}
 
 		Velocity = velocity;
@@ -100,7 +90,7 @@ public partial class Player : CharacterBody2D
 	}
 	private Vector2 GetInput()
 	{
-		Vector2 direction = new Vector2();
+		Vector2 direction = new();
 		if (Input.IsActionPressed("walk_left"))
 		{
 			direction.X -= 1;
@@ -162,17 +152,9 @@ public partial class Player : CharacterBody2D
 		velocity.Y = -dynamicJumpSpeed;
 		velocity.X = horizontalJumpForce;
 
-		// Apply rotation based on the facing direction
-		sprite.Rotation = facingDirection == "right" ? DegreesOfRotation : -DegreesOfRotation;
-
 		// Reset jump key hold time and set isJumping to true
 		jumpKeyHoldTime = 0f;
 		isJumping = true;
-	}
-
-	public bool IsPlayer()
-	{
-		return true;
 	}
 
 	public float GetYVelocity()

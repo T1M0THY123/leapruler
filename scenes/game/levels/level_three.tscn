@@ -103,7 +103,7 @@ sources/0 = SubResource("TileSetAtlasSource_xf4nh")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n73qo"]
 size = Vector2(208.17, 8.21914)
 
-[node name="Node2D" type="Node2D"]
+[node name="Node2D2" type="Node2D"]
 
 [node name="Background" type="Sprite2D" parent="."]
 visible = false
@@ -123,8 +123,6 @@ zoom = Vector2(3, 3)
 [node name="Player" parent="." instance=ExtResource("3_jtx45")]
 position = Vector2(-263, 83)
 scale = Vector2(0.9, 0.9)
-MinJumpHorizontalSpeed = 21.25
-MaxJumpHorizontalSpeed = 77.0
 
 [node name="NextLevel" type="Area2D" parent="."]
 position = Vector2(0, -210)
