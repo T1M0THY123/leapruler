@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://ba3n608dpajqq"]
+[gd_scene load_steps=9 format=3 uid="uid://ba3n608dpajqq"]
 
 [ext_resource type="Texture2D" uid="uid://cli7327rfpu82" path="res://assets/level_one.png" id="1_k0yat"]
 [ext_resource type="Texture2D" uid="uid://ddcqq7mq4ufg3" path="res://assets/tilemap.png" id="2_u6fcv"]
 [ext_resource type="PackedScene" uid="uid://bkcfsk70huip4" path="res://scenes/game/player.tscn" id="3_acwyw"]
 [ext_resource type="Script" path="res://scenes/game/levels/NextLevel.cs" id="4_fw18j"]
+[ext_resource type="AudioStream" uid="uid://bsdmkih1hil4w" path="res://assets/audio/2.mp3" id="5_wa383"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ktisg"]
 texture = ExtResource("2_u6fcv")
@@ -118,7 +119,7 @@ zoom = Vector2(3, 3)
 
 [node name="Player" parent="." instance=ExtResource("3_acwyw")]
 position = Vector2(-307, 115)
-scale = Vector2(0.9, 0.9)
+scale = Vector2(1, 1)
 
 [node name="NextLevel" type="Area2D" parent="."]
 position = Vector2(0, -210)
@@ -141,6 +142,12 @@ NextScenePath = "res://scenes/game/levels/level_two.tscn"
 position = Vector2(0, 20.75)
 scale = Vector2(3.06, 0.365)
 shape = SubResource("RectangleShape2D_n73qo")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_wa383")
+volume_db = -7.0
+pitch_scale = 0.2
+autoplay = true
 
 [connection signal="body_entered" from="NextLevel" to="NextLevel" method="OnBodyEntered"]
 [connection signal="body_entered" from="PreviousLevel" to="PreviousLevel" method="OnBodyEntered"]

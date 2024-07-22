@@ -4,13 +4,13 @@ using Godot;
 public partial class Player : CharacterBody2D
 {
 	[Export]
-	private float WalkHorizontalSpeed { get; set; } = 75f;
+	private float WalkHorizontalSpeed { get; set; } = 45f;
 	[Export]
 	private float JumpHorizontalSpeed { get; set; } = 250f;
 	[Export]
 	private float MinJumpHorizontalSpeed { get; set; } = 66f;
 	[Export]
-	private float MaxJumpHorizontalSpeed { get; set; } = 218f; // Adjust the value as needed
+	private float MaxJumpHorizontalSpeed { get; set; } = 188f; // Adjust the value as needed
 	[Export]
 	private float MaxJumpHeight { get; set; } = 77f; //nice
 	[Export]
@@ -18,11 +18,11 @@ public partial class Player : CharacterBody2D
 	[Export]
 	private float MaxDurationOfJump { get; set; } = 0.38f;
 	[Export]
-	private float TimeToJumpPeak { get; set; } = 0.28f;
+	private float TimeToJumpPeak { get; set; } = 0.35f;
 	[Export]
 	private float gravityFactor { get; set; } = 1f;
 	[Export]
-	private float MinimumBounceVelocity { get; set; } = 30f;
+	private float MinimumBounceVelocity { get; set; } = 150f;
 	private float Gravity;
 	private float JumpSpeed;
 	private Vector2 velocity = new Vector2();
@@ -168,5 +168,10 @@ public partial class Player : CharacterBody2D
 	public String GetLastMove()
 	{
 		return lastInputAction;
+	}
+
+	public String GetFacingDirection()
+	{
+		return facingDirection;
 	}
 }
