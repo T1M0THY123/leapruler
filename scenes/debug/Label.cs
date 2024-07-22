@@ -17,7 +17,7 @@ public partial class Label : Godot.Label
 		if (player != null)
 		{
 			// Update the label's text based on the player's isJumping status
-			Text = player.GetYVelocity().ToString();
+			Text = player.GetLastMove();
 		}
 	}
 }

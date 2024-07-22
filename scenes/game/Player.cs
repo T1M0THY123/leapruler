@@ -29,6 +29,7 @@ public partial class Player : CharacterBody2D
 	private string facingDirection = "right";
 	private float jumpKeyHoldTime = 0f;
 	private bool isJumping = false;
+	private string lastInputAction = "";
 	public bool IsPlayer() => true;
 
 	public override void _Ready()
@@ -53,10 +54,14 @@ public partial class Player : CharacterBody2D
 
 			if (Input.IsActionPressed("jump") && movementDirection.X == 0 && movementDirection.Y == 0)
 			{
+				if (Input.IsActionJustPressed("jump"))
+				{
+					lastInputAction = "jump";
+				}
 				jumpKeyHoldTime += (float)delta;
 				jumpInitiated = true;
 			}
-			if (Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump)
+			if ((Input.IsActionJustReleased("jump") || jumpKeyHoldTime > MaxDurationOfJump) && lastInputAction == "jump")
 			{
 				Jump();
 				jumpInitiated = true;
@@ -65,6 +70,7 @@ public partial class Player : CharacterBody2D
 			if (!jumpInitiated)
 			{
 				velocity.X = movementDirection.X * WalkHorizontalSpeed;
+				jumpKeyHoldTime = 0f;
 			}
 		}
 		else
@@ -101,11 +107,19 @@ public partial class Player : CharacterBody2D
 		{
 			direction.X -= 1;
 			facingDirection = "left";
+			if (Input.IsActionJustPressed("walk_left"))
+			{
+				lastInputAction = "move";
+			}
 		}
 		if (Input.IsActionPressed("walk_right"))
 		{
 			direction.X += 1;
 			facingDirection = "right";
+			if (Input.IsActionJustPressed("walk_right"))
+			{
+				lastInputAction = "move";
+			}
 		}
 		return direction;
 	}
@@ -151,8 +165,8 @@ public partial class Player : CharacterBody2D
 		isJumping = true;
 	}
 
-	public float GetYVelocity()
+	public String GetLastMove()
 	{
-		return velocity.Y;
+		return lastInputAction;
 	}
 }
