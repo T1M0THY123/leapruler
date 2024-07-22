@@ -26,6 +26,8 @@ public partial class Player : CharacterBody2D
 	private float Gravity;
 	private float JumpSpeed;
 	private Vector2 velocity = new Vector2();
+	private Sprite2D sprite;
+	private AudioStreamPlayer audioStreamPlayer;
 	private string facingDirection = "right";
 	private float jumpKeyHoldTime = 0f;
 	private bool isJumping = false;
@@ -36,14 +38,19 @@ public partial class Player : CharacterBody2D
 	{
 		Gravity = 2 * MaxJumpHeight / Mathf.Pow(TimeToJumpPeak, 2);
 		JumpSpeed = Gravity * TimeToJumpPeak;
+		sprite = GetNode<Sprite2D>("Sprite2D");
+		audioStreamPlayer = GetNode<AudioStreamPlayer>("AudioStreamPlayer");
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		isJumping = false;
 		Vector2 movementDirection = GetInput();
+		sprite.Rotation = 0;
+
 
 		ApplyGravity((float)delta);
+
 
 		if (IsOnFloor()) // If the player is on the floor
 		{
@@ -89,13 +96,25 @@ public partial class Player : CharacterBody2D
 					// Invert the Y velocity as usual
 					velocity.Y = -velocity.Y;
 				}
+				PlayHitSound();
 			}
 			if (IsOnWall())
 			{
 				velocity.X = -velocity.X;
 				facingDirection = facingDirection == "right" ? "left" : "right";
+				PlayHitSound();
+			}
+
+			if (facingDirection == "left")
+			{
+				sprite.RotationDegrees = -45;
+			}
+			else
+			{
+				sprite.RotationDegrees = 45;
 			}
 		}
+
 
 		Velocity = velocity;
 		MoveAndSlide();
@@ -163,6 +182,7 @@ public partial class Player : CharacterBody2D
 		// Reset jump key hold time and set isJumping to true
 		jumpKeyHoldTime = 0f;
 		isJumping = true;
+		PlayJumpSound();
 	}
 
 	public String GetLastMove()
@@ -173,5 +193,17 @@ public partial class Player : CharacterBody2D
 	public String GetFacingDirection()
 	{
 		return facingDirection;
+	}
+
+	private void PlayHitSound()
+	{
+		audioStreamPlayer.PitchScale = 0.25f;
+		audioStreamPlayer.Play();
+	}
+
+	private void PlayJumpSound()
+	{
+		audioStreamPlayer.PitchScale = 1f;
+		audioStreamPlayer.Play();
 	}
 }

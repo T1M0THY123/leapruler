@@ -17,6 +17,15 @@ public partial class NextLevel : Area2D
 	private void OnBodyEntered(Node2D body)
 	{
 		if (!body.HasMethod("IsPlayer")) return;
-		GetTree().ChangeSceneToFile(NextScenePath);
+		if (NextScenePath == "res://scenes/game/levels/level_four.tscn")
+		{
+			GetTree().Quit();
+		}
+		else
+		{
+			GetTree().ChangeSceneToFile(NextScenePath);
+			
+		}
+
 	}
 }

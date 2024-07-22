@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bkcfsk70huip4"]
+[gd_scene load_steps=5 format=3 uid="uid://bkcfsk70huip4"]
 
 [ext_resource type="Script" path="res://scenes/game/Player.cs" id="1_hfgwq"]
 [ext_resource type="Texture2D" uid="uid://c34ia2yk03ntp" path="res://assets/player.png" id="2_sdsfv"]
-[ext_resource type="FontFile" uid="uid://bamnw4cr8yexq" path="res://assets/Lato-Thin.ttf" id="3_22y3q"]
-[ext_resource type="Script" path="res://scenes/debug/Label.cs" id="3_n2cdk"]
+[ext_resource type="AudioStream" uid="uid://b2cw6nufnkf5t" path="res://assets/audio/hit.wav" id="3_sgrds"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_f2mff"]
 radius = 8.0
@@ -20,12 +19,6 @@ position = Vector2(0, 0.42)
 scale = Vector2(0.95, 0.95)
 shape = SubResource("CircleShape2D_f2mff")
 
-[node name="Label" type="Label" parent="."]
-offset_left = -81.0
-offset_top = -17.0
-offset_right = 79.0
-offset_bottom = 19.0
-theme_override_fonts/font = ExtResource("3_22y3q")
-horizontal_alignment = 1
-autowrap_mode = 3
-script = ExtResource("3_n2cdk")
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_sgrds")
+volume_db = -4.0

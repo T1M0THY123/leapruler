@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://cinhqne76dsnm"]
+[gd_scene load_steps=10 format=3 uid="uid://cinhqne76dsnm"]
 
 [ext_resource type="Texture2D" uid="uid://cli7327rfpu82" path="res://assets/level_one.png" id="1_sgvcw"]
 [ext_resource type="Texture2D" uid="uid://m04wb6sfun1q" path="res://assets/tilemap_moon.png" id="2_pc5q3"]
 [ext_resource type="PackedScene" uid="uid://bkcfsk70huip4" path="res://scenes/game/player.tscn" id="3_jtx45"]
 [ext_resource type="Script" path="res://scenes/game/levels/NextLevel.cs" id="4_o1w0k"]
 [ext_resource type="AudioStream" uid="uid://ca8apcxsq2nxp" path="res://assets/audio/4.mp3" id="5_rhjgh"]
+[ext_resource type="PackedScene" uid="uid://dmcsfvixoq65a" path="res://scenes/game/background.tscn" id="6_66mc6"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xf4nh"]
 texture = ExtResource("2_pc5q3")
@@ -175,6 +176,8 @@ stream = ExtResource("5_rhjgh")
 volume_db = -7.0
 pitch_scale = 0.2
 autoplay = true
+
+[node name="TextureRect" parent="." instance=ExtResource("6_66mc6")]
 
 [connection signal="body_entered" from="NextLevel" to="NextLevel" method="OnBodyEntered"]
 [connection signal="body_entered" from="PreviousLevel" to="PreviousLevel" method="OnBodyEntered"]
