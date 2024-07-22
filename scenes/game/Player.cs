@@ -8,19 +8,21 @@ public partial class Player : CharacterBody2D
 	[Export]
 	private float JumpHorizontalSpeed { get; set; } = 250f;
 	[Export]
-	private float MinJumpHorizontalSpeed { get; set; } = 42.5f;
+	private float MinJumpHorizontalSpeed { get; set; } = 22f;
 	[Export]
-	private float MaxJumpHorizontalSpeed { get; set; } = 155f; // Adjust the value as needed
+	private float MaxJumpHorizontalSpeed { get; set; } = 186f; // Adjust the value as needed
 	[Export]
-	private float MaxJumpHeight { get; set; } = 69f; //nice
+	private float MaxJumpHeight { get; set; } = 77f; //nice
 	[Export]
-	private float MinJumpHeight { get; set; } = 16f;
+	private float MinJumpHeight { get; set; } = 5f;
 	[Export]
-	private float MaxDurationOfJump { get; set; } = 0.65f;
+	private float MaxDurationOfJump { get; set; } = 0.38f;
 	[Export]
-	private float TimeToJumpPeak { get; set; } = 0.4f;
+	private float TimeToJumpPeak { get; set; } = 0.28f;
 	[Export]
 	private float DegreesOfRotation { get; set; } = 90f;
+	[Export]
+	private float gravityFactor { get; set; } = 1f;
 
 	private float Gravity;
 	private float JumpSpeed;
@@ -55,6 +57,7 @@ public partial class Player : CharacterBody2D
 
 		if (isJumping)
 		{
+
 			if (IsOnCeiling())
 			{
 				velocity.Y = -velocity.Y;
@@ -113,7 +116,7 @@ public partial class Player : CharacterBody2D
 
 	private void ApplyGravity(float delta)
 	{
-		velocity.Y += Gravity * delta;
+		velocity.Y += Gravity * delta * gravityFactor;
 	}
 
 	private void ApplyMovement(Vector2 direction)
@@ -170,5 +173,10 @@ public partial class Player : CharacterBody2D
 	public bool IsPlayer()
 	{
 		return true;
+	}
+
+	public float GetYVelocity()
+	{
+		return velocity.Y;
 	}
 }
